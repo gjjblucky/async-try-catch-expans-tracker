@@ -1,0 +1,135 @@
+<html>
+<body>
+<form onsubmit="saveToLocalStorage(event)">
+
+    <label>Choose expenseamount</label>
+<input id="amount" type="number" name="Choose expenseamount">
+
+    <label>Description</label>
+<input id="description" type="text" name="description">
+
+<br>
+<br>
+
+<label>Choose a category</label>
+<select  id="category" name="category">
+<option>fuel</option>
+<option>electricity</option>
+<option>petrol</option>
+<option>movie</option>
+</select>
+
+</select>
+<button>Add expenses</button>
+
+</form>
+<ul id="list of user"></ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js">
+
+</script>
+
+<script>
+
+window.addEventListener('DOMContentLoaded',dispdata);
+
+   
+async function saveToLocalStorage(event){
+event.preventDefault();
+            const amount=event.target.amount.value;
+            const description=event.target.description.value;
+            const category=event.target.category.value;
+            
+            let myobj={
+            amount,
+            description,
+            category
+            }
+        
+const post1=axios.post('https://crudcrud.com/api/530869aeca0743edabdbaf6700c351c0/appointmentlist',myobj)
+let response=await post1;
+        
+                        try{
+                           
+                              showNewUserOnScreen(response.data);
+                                                       console.log(response)
+                        }catch(err){
+                               console.log(err)
+                        }
+                    }
+        
+        
+
+async function dispdata(){
+
+                const get1=axios.get('https://crudcrud.com/api/530869aeca0743edabdbaf6700c351c0/appointmentlist')
+                let response2=await get1;
+
+                try{
+                
+
+for(var i=0;i<response2.data.length;i++){
+    showNewUserOnScreen(response2.data[i]);
+}
+
+                }catch(err){
+                   
+                    console.log(err);
+             
+                }
+            
+            }
+
+        
+        
+        function showNewUserOnScreen(user){
+            const parentNode=document.getElementById('list of user');
+            const childHTML=`<li id='${user._id}' > ${user.amount}-${user.description}_${user.category}
+              <button onclick=deleteUser('${user._id}')> delete user</button>
+             <button onclick=editUserDetails('${user.amount}','${user.description}','${user.category}','${user._id}')>Edit user</button>  
+                    </li>`
+            parentNode.innerHTML=parentNode.innerHTML+childHTML;
+        } 
+
+        function editUserDetails(amount,description,category,userid){
+
+document.getElementById('amount').value = amount;
+document.getElementById('description').value = description;
+document.getElementById('category').value =category;
+
+deleteUser(userid);
+}
+
+
+      async function deleteUser(userid){ 
+const delete1=axios.delete(`https://crudcrud.com/api/530869aeca0743edabdbaf6700c351c0/appointmentlist/${userid}`)
+const response3=await delete1;
+      
+ try{
+                   
+                 removeUserFromScreen(userid);
+
+}catch(err){ 
+    console.log(err);
+
+}
+
+      }          
+        
+
+        function removeUserFromScreen(userid){
+            const parentNode=document.getElementById('list of user');
+            const childNodeToBeDeleted=document.getElementById(userid);
+            parentNode.removeChild(childNodeToBeDeleted)
+        }
+
+</script>
+
+</body>
+
+
+
+
+
+
+</html>
